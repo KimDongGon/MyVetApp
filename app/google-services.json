@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "350498766821",
+    "firebase_url": "https://myvet-f53b8.firebaseio.com",
+    "project_id": "myvet-f53b8",
+    "storage_bucket": "myvet-f53b8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:350498766821:android:2080684526680711aff90c",
+        "android_client_info": {
+          "package_name": "com.example.myvetapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "350498766821-kkgefpm5r13sh3d1ofvk57qcpmne89t8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBWHhW6BzrfQwFcAzFehPFrJ_vD8atESEU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "350498766821-kkgefpm5r13sh3d1ofvk57qcpmne89t8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
