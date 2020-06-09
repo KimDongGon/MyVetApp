@@ -14,10 +14,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun init() {
-        Handler().postDelayed(Runnable {
-            var i = Intent(this, LoginActivity::class.java);
-            startActivity(i)
-            finish()
-        }, 3000)
+        var fragment = supportFragmentManager.findFragmentById(R.id.frame)
+
+//        Handler().postDelayed(Runnable {
+//            var i = Intent(this, LoginActivity::class.java);
+//            startActivity(i)
+//            finish()
+//        }, 3000)
     }
 }
