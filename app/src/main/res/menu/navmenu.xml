@@ -2,14 +2,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/disease"
-        android:icon="@android:drawable/ic_menu_edit"
+        android:icon="@drawable/ic_animal"
         android:title="질병" />
     <item
         android:id="@+id/hosipital"
-        android:icon="@android:drawable/stat_notify_sdcard"
+        android:icon="@drawable/ic_hosipital"
         android:title="병원" />
     <item
         android:id="@+id/youtube"
-        android:icon="@android:drawable/ic_menu_help"
+        android:icon="@drawable/ic_youtube"
         android:title="유튜브" />
 </menu>

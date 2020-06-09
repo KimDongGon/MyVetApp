@@ -2,29 +2,39 @@ package com.example.myvetapp
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import kotlinx.android.synthetic.main.activity_find_disease.*
+import kotlinx.android.synthetic.main.fragment_find_disease.*
 
-class FindDiseaseActivity : AppCompatActivity() {
+class FindDiseaseFragment : Fragment() {
     lateinit var autoadapter: ArrayAdapter<String>
     lateinit var diseaseadapter: MyDiseaseAdapter
     lateinit var layoutManager: LinearLayoutManager
     lateinit var rdb: DatabaseReference
     var symptom = ArrayList<String>();
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_find_disease)
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_find_disease, container, false)
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
         init()
     }
 
     private fun init() {
-        layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
         recyclerView.layoutManager = layoutManager
         rdb = FirebaseDatabase.getInstance().getReference("Diseases/disease")
 //        var rootRef = rdb.root
@@ -44,7 +54,7 @@ class FindDiseaseActivity : AppCompatActivity() {
 
 
         symptom = findSymptom()
-        autoadapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, symptom)
+        autoadapter = ArrayAdapter(requireActivity(), android.R.layout.simple_dropdown_item_1line, symptom)
     }
 
     private fun findSymptom(): ArrayList<String> {
