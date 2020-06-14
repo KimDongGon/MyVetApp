@@ -37,19 +37,19 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         when(item.itemId){
             R.id.disease -> {
                 var Fragment = FindDiseaseFragment()
-                Transaction.replace(R.id.frame, Fragment, "addFrag")
+                Transaction.replace(R.id.frame, Fragment, "diseaseFrag")
                 Transaction.commit()
                 return true
             }
             R.id.hosipital -> {
                 var Fragment = HosipitalFragment()
-                Transaction.replace(R.id.frame, Fragment, "addFrag")
+                Transaction.replace(R.id.frame, Fragment, "hospitalFrag")
                 Transaction.commit()
                 return true
             }
             R.id.youtube -> {
                 var Fragment = YoutubeFragment()
-                Transaction.replace(R.id.frame, Fragment, "addFrag")
+                Transaction.replace(R.id.frame, Fragment, "youtubeFrag")
                 Transaction.commit()
                 return true
             }

@@ -108,7 +108,7 @@ class LoginActivity : AppCompatActivity() {
     fun moveMainPage(user: FirebaseUser?){
         if(user != null){
             Toast.makeText(this, getString(R.string.signin_complete), Toast.LENGTH_SHORT).show()
-            startActivity(Intent(this, FindDiseaseActivity::class.java))
+            startActivity(Intent(this, MainActivity::class.java))
             finish()
         }
     }
@@ -165,12 +165,13 @@ class LoginActivity : AppCompatActivity() {
         if(requestCode == GOOGLE_LOGIN_CODE){
             var result = Auth.GoogleSignInApi.getSignInResultFromIntent(data)
 
-            if(result.isSuccess){
-                var account = result.signInAccount
-                firebaseAuthWithGoogle(account!!)
-            }
-            else{
-                progress_bar.visibility = View.GONE
+            if (result != null) {
+                if(result.isSuccess){
+                    var account = result.signInAccount
+                    firebaseAuthWithGoogle(account!!)
+                } else{
+                    progress_bar.visibility = View.GONE
+                }
             }
         }
     }
