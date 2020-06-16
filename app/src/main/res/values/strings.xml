@@ -6,8 +6,6 @@
     <string name="com.twitter.sdk.android.CONSUMER_KEY">VDgWHyCe9KZTMDG3Ds4AwE5Hq</string>
     <string name="com.twitter.sdk.android.CONSUMER_SECRET">7JyGuzLF76bHTNT4vd4YH8XodsTDXS7o3J5VXaldOYN3a1rtqO</string>
 
-    <string name="default_web_client_id" translatable="false">350498766821-kkgefpm5r13sh3d1ofvk57qcpmne89t8.apps.googleusercontent.com</string>
-
     <!-- Sign In -->
     <string name="email">Email</string>
     <string name="password">Password</string>
