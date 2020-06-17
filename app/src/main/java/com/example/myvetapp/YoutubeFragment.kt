@@ -13,7 +13,7 @@ class YoutubeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_hosipital, container, false)
+        return inflater.inflate(R.layout.fragment_youtube, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
