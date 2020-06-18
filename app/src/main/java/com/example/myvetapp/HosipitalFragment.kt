@@ -102,9 +102,9 @@ class HosipitalFragment : Fragment() {
     fun getuserlocation() {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
         if(ActivityCompat.checkSelfPermission(requireActivity(),
-                android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
             ActivityCompat.checkSelfPermission(requireActivity(),
-                android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             fusedLocationClient?.lastLocation?.addOnSuccessListener {
                 loc = LatLng(it.latitude, it.longitude)
             }
