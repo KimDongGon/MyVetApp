@@ -3,6 +3,7 @@ package com.example.myvetapp
 import android.Manifest
 import android.content.pm.PackageManager
 import android.graphics.Color
+import android.os.AsyncTask
 import android.os.Bundle
 import android.os.Looper
 import android.os.StrictMode
@@ -23,6 +24,7 @@ import com.google.android.gms.maps.model.PolygonOptions
 import org.w3c.dom.Element
 import org.w3c.dom.Node
 import org.xmlpull.v1.XmlPullParserFactory
+import java.lang.ref.WeakReference
 import java.net.URL
 import javax.xml.parsers.DocumentBuilderFactory
 
@@ -150,39 +152,41 @@ class HosipitalFragment : Fragment() {
     }
 
     private fun initMark(){
-        val apiKey = "ed857aecd5ad48a3a8688ac44d222775"
-        var policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
-        StrictMode.setThreadPolicy(policy)
-        googleMap.clear()
-        val options = MarkerOptions()
-//        Thread {
-        val apiUrl = "https://openapi.gg.go.kr/Animalhosptl?KEY="+apiKey
-        val xml = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(apiUrl)
-        val list = xml.getElementsByTagName("row")
+        val task = MyAsyncTask(this)
+        task.execute()
 
-        for(i in 0..list.length-1){
-            var n = list.item(i)
-            if(n.getNodeType() == Node.ELEMENT_NODE){
-                val elem = n as Element
-                val map = mutableMapOf<String, String>()
+    }
 
-                for(j in 0..elem.attributes.length-1){
-                    map.putIfAbsent(elem.attributes.item(j).nodeName, elem.attributes.item(j).nodeValue)
+    class MyAsyncTask(context: HosipitalFragment): AsyncTask<Unit, Unit, Unit>(){
+        var activityreference = WeakReference(context)
+        override fun doInBackground(vararg p0: Unit?) {
+            val activity = activityreference.get()
+            val apiKey = "ed857aecd5ad48a3a8688ac44d222775"
+            activity?.googleMap?.clear()
+            val options = MarkerOptions()
+            val apiUrl = "https://openapi.gg.go.kr/Animalhosptl?KEY="+apiKey
+            val xml = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(apiUrl)
+            val list = xml.getElementsByTagName("row")
+
+            for(i in 0..list.length-1){
+                var n = list.item(i)
+                if(n.getNodeType() == Node.ELEMENT_NODE){
+                    val elem = n as Element
+                    val map = mutableMapOf<String, String>()
+
+                    for(j in 0..elem.attributes.length-1){
+                        map.putIfAbsent(elem.attributes.item(j).nodeName, elem.attributes.item(j).nodeValue)
+                    }
+                    activity?.loc = LatLng(elem.getElementsByTagName("REFINE_WGS84_LAT").item(0).textContent.toDouble(), elem.getElementsByTagName("REFINE_WGS84_LOGT").item(0).textContent.toDouble())
+                    if (activity != null) {
+                        options.position(activity.loc)
+                    }
+                    options.title(elem.getElementsByTagName("BIZPLC_NM").item(0).textContent)
+                    options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
+                    val mk1 = activity?.googleMap?.addMarker(options)
+                    mk1?.showInfoWindow()
                 }
-                loc = LatLng(elem.getElementsByTagName("REFINE_WGS84_LAT").item(0).textContent.toDouble(), elem.getElementsByTagName("REFINE_WGS84_LOGT").item(0).textContent.toDouble())
-                options.position(loc)
-                options.title(elem.getElementsByTagName("BIZPLC_NM").item(0).textContent)
-                options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
-                val mk1 = googleMap.addMarker(options)
-                mk1.showInfoWindow()
             }
         }
-//        }.start()
-//        for(i in 0..arrLoc.size-1){
-//            options.position(arrLoc[i])
-//            options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
-//            val mk1 = googleMap.addMarker(options)
-//            mk1.showInfoWindow()
-//        }
     }
 }
