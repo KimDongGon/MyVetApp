@@ -12,8 +12,6 @@ import org.w3c.dom.Text
 class MyDiseaseAdapter(options: FirebaseRecyclerOptions<Disease>) :
     FirebaseRecyclerAdapter<Disease, MyDiseaseAdapter.ViewHolder>(options) {
 
-    var itemClickListener:OnItemClickListener? = null
-
     inner class ViewHolder(itemView: View):RecyclerView.ViewHolder(itemView) {
         var dname:TextView
         var dsymptom:TextView
@@ -25,17 +23,8 @@ class MyDiseaseAdapter(options: FirebaseRecyclerOptions<Disease>) :
             dsymptom = itemView.findViewById(R.id.dsymptom)
             dcure = itemView.findViewById(R.id.dcure)
             dadvice = itemView.findViewById(R.id.dadvice)
-
-            itemView.setOnClickListener {
-                itemClickListener?.OnItemClick(it, adapterPosition)
-            }
         }
     }
-
-    interface OnItemClickListener{
-        fun OnItemClick(view: View, position: Int)
-    }
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val v = LayoutInflater.from(parent.context).inflate(R.layout.row, parent, false)
         return ViewHolder(v)
@@ -47,6 +36,4 @@ class MyDiseaseAdapter(options: FirebaseRecyclerOptions<Disease>) :
         holder.dcure.text = model.dCure
         holder.dadvice.text = model.dAdvice
     }
-
-
 }
