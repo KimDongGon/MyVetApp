@@ -1,10 +1,12 @@
 package com.example.myvetapp
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.BitmapDrawable
+import android.net.Uri
 import android.os.AsyncTask
 import android.os.Bundle
 import android.os.Looper
@@ -16,7 +18,9 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
+import androidx.core.content.res.ResourcesCompat
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -37,6 +41,8 @@ class HosipitalFragment : Fragment() {
     var markTitle = ArrayList<String>()
     var markTel = ArrayList<String>()
     var markAddr = ArrayList<String>()
+    val MAP_REQUEST = 100
+    val CALL_REQUEST = 200
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -65,7 +71,7 @@ class HosipitalFragment : Fragment() {
             // 권한이 없을 경우 requestPermission 함수를 사용하여 권한 요청
             // 결과는 onRequestPermissionResult로 이동동
            ActivityCompat.requestPermissions(requireActivity(),
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION), 100)
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION), MAP_REQUEST)
         }
     }
 
@@ -126,15 +132,26 @@ class HosipitalFragment : Fragment() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if(requestCode == 100){
-            if(grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED){
-                getuserlocation()
+        when(requestCode){
+            MAP_REQUEST->{
+                if(grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED){
+                    getuserlocation()
 //                startLocationUpdates()
-                initMap()
+                    initMap()
+                }
+                else {
+                    Toast.makeText(requireActivity(), "위치정보 제공을 하셔야 합니다.", Toast.LENGTH_SHORT).show()
+                    initMap()
+                }
             }
-            else {
-                Toast.makeText(requireActivity(), "위치정보 제공을 하셔야 합니다.", Toast.LENGTH_SHORT).show()
-                initMap()
+            CALL_REQUEST->{
+                if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    Toast.makeText(requireActivity(),"권한이 승인되었습니다.", Toast.LENGTH_SHORT).show()
+                    callAction()
+                }
+                else{
+                    Toast.makeText(requireActivity(), "권한 승인이 거부되었습니다.", Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }
@@ -161,14 +178,13 @@ class HosipitalFragment : Fragment() {
                 var info = LinearLayout(requireContext())
                 info.orientation = LinearLayout.VERTICAL
                 var title = TextView(requireContext())
-                title.setTextColor(Color.BLACK)
+                title.setTextColor(ResourcesCompat.getColor(resources,R.color.colorSky,null))
                 title.gravity = Gravity.CENTER
                 title.setTypeface(null, Typeface.BOLD)
                 title.setText(p0?.title)
 
-
                 var snippet = TextView(requireContext())
-                snippet.setTextColor(Color.GRAY)
+                snippet.setTextColor(Color.BLACK)
                 snippet.setText(p0?.snippet)
 
                 info.addView(title)
@@ -185,15 +201,56 @@ class HosipitalFragment : Fragment() {
         if(task.execute().get()){
             for(i in 0..arrLoc.size-1){
                 options.position(arrLoc[i])
-                options.title(markTitle[i])
-                options.snippet(markAddr[i] + "\n" + markTel[i])
-                options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
-                options.alpha(0.5f)
+                    .title(markTitle[i])
+                    .snippet("주소:"+markAddr[i] + "\n번호:"+markTel[i])
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
+                    .alpha(0.5f)
                 val mk1 = googleMap.addMarker(options)
                 mk1.showInfoWindow()
             }
         }
+        googleMap.setOnInfoWindowClickListener {
+            val phone = it.snippet.split(":")[2]
+            if (!phone.equals("번호 없음")){
+                val number = Uri.parse("tel:"+phone)
+                val callIntent = Intent(Intent.ACTION_CALL,number)
+                if(ActivityCompat.checkSelfPermission(
+                        requireActivity(),
+                        Manifest.permission.CALL_PHONE
+                    ) != PackageManager.PERMISSION_GRANTED){
+                    callAlertDlg()
+                } else{
+                    startActivity(callIntent)
+                }
+            }
+        }
     }
+
+    private fun callAlertDlg(){
+        val builder = AlertDialog.Builder(requireActivity())
+        builder.setMessage("반드시 CALL_PHONE 권한이 허용되어야 합니다.")
+            .setTitle("권한허용")
+        builder.setPositiveButton("OK"){
+                _,_ ->ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.CALL_PHONE), CALL_REQUEST)
+        }
+        val dlg = builder.create()
+        dlg.show()
+    }
+
+    private fun callAction(){
+        val number = Uri.parse("tel:010-1234-1234")
+        val callIntent = Intent(Intent.ACTION_CALL, number)
+        if (ActivityCompat.checkSelfPermission(
+                requireActivity(),
+                Manifest.permission.CALL_PHONE
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            callAlertDlg()
+        } else{
+            startActivity(callIntent)
+        }
+    }
+
 
     class MyAsyncTask(context: HosipitalFragment): AsyncTask<Unit, Unit, Boolean>(){
         var activityreference = WeakReference(context)
@@ -218,8 +275,8 @@ class HosipitalFragment : Fragment() {
                         activity?.loc = LatLng(elem.getElementsByTagName("REFINE_WGS84_LAT").item(0).textContent.toDouble(), elem.getElementsByTagName("REFINE_WGS84_LOGT").item(0).textContent.toDouble())
                         activity?.arrLoc?.add(activity?.loc)
                         activity?.markTitle?.add(elem.getElementsByTagName("BIZPLC_NM").item(0).textContent)
-                        activity?.markAddr?.add("주소: "+checkNull(0, elem.getElementsByTagName("REFINE_LOTNO_ADDR").item(0).textContent))
-                        activity?.markTel?.add("번호: "+checkNull(1, elem.getElementsByTagName("LOCPLC_FACLT_TELNO").item(0).textContent))
+                        activity?.markAddr?.add(checkNull(0, elem.getElementsByTagName("REFINE_LOTNO_ADDR").item(0).textContent))
+                        activity?.markTel?.add(checkNull(1, elem.getElementsByTagName("LOCPLC_FACLT_TELNO").item(0).textContent))
 
                     }
                 }
