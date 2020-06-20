@@ -28,6 +28,9 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/frame"
+        android:background="@color/colorAccent"
+        app:itemIconTint="@color/colorWhite"
+        app:itemTextColor="@color/colorWhite"
         app:menu="@menu/navmenu">
 
     </com.google.android.material.bottomnavigation.BottomNavigationView>

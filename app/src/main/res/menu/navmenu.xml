@@ -11,5 +11,6 @@
     <item
         android:id="@+id/youtube"
         android:icon="@drawable/ic_youtube"
-        android:title="유튜브" />
+        android:title="유튜브"
+        />
 </menu>

@@ -2,22 +2,26 @@ package com.example.myvetapp
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.graphics.Color
+import android.graphics.Typeface
+import android.graphics.drawable.BitmapDrawable
 import android.os.AsyncTask
 import android.os.Bundle
 import android.os.Looper
+import android.view.Gravity
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.*
 import org.w3c.dom.Element
 import org.w3c.dom.Node
 import java.lang.ref.WeakReference
@@ -31,6 +35,8 @@ class HosipitalFragment : Fragment() {
     var loc = LatLng(37.6706, 126.7810)
     val arrLoc = ArrayList<LatLng>()
     var markTitle = ArrayList<String>()
+    var markTel = ArrayList<String>()
+    var markAddr = ArrayList<String>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -93,14 +99,14 @@ class HosipitalFragment : Fragment() {
         }
     }
 
-    fun stopLocationUpdates(){
-        fusedLocationClient?.removeLocationUpdates(locationCallback)
-    }
+//    fun stopLocationUpdates(){
+//        fusedLocationClient?.removeLocationUpdates(locationCallback)
+//    }
 
-    override fun onPause() {
-        super.onPause()
+//    override fun onPause() {
+//        super.onPause()
 //        stopLocationUpdates()
-    }
+//    }
 
     fun getuserlocation() {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
@@ -150,11 +156,39 @@ class HosipitalFragment : Fragment() {
         val options = MarkerOptions()
         googleMap.clear()
         val task = MyAsyncTask(this)
+        googleMap.setInfoWindowAdapter(object:GoogleMap.InfoWindowAdapter{
+            override fun getInfoContents(p0: Marker?): View {
+                var info = LinearLayout(requireContext())
+                info.orientation = LinearLayout.VERTICAL
+                var title = TextView(requireContext())
+                title.setTextColor(Color.BLACK)
+                title.gravity = Gravity.CENTER
+                title.setTypeface(null, Typeface.BOLD)
+                title.setText(p0?.title)
+
+
+                var snippet = TextView(requireContext())
+                snippet.setTextColor(Color.GRAY)
+                snippet.setText(p0?.snippet)
+
+                info.addView(title)
+                info.addView(snippet)
+
+                return info
+            }
+
+            override fun getInfoWindow(p0: Marker?): View? {
+                return null
+            }
+
+        })
         if(task.execute().get()){
             for(i in 0..arrLoc.size-1){
                 options.position(arrLoc[i])
                 options.title(markTitle[i])
-                options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
+                options.snippet(markAddr[i] + "\n" + markTel[i])
+                options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
+                options.alpha(0.5f)
                 val mk1 = googleMap.addMarker(options)
                 mk1.showInfoWindow()
             }
@@ -184,10 +218,23 @@ class HosipitalFragment : Fragment() {
                         activity?.loc = LatLng(elem.getElementsByTagName("REFINE_WGS84_LAT").item(0).textContent.toDouble(), elem.getElementsByTagName("REFINE_WGS84_LOGT").item(0).textContent.toDouble())
                         activity?.arrLoc?.add(activity?.loc)
                         activity?.markTitle?.add(elem.getElementsByTagName("BIZPLC_NM").item(0).textContent)
+                        activity?.markAddr?.add("주소: "+checkNull(0, elem.getElementsByTagName("REFINE_LOTNO_ADDR").item(0).textContent))
+                        activity?.markTel?.add("번호: "+checkNull(1, elem.getElementsByTagName("LOCPLC_FACLT_TELNO").item(0).textContent))
+
                     }
                 }
             }
             return true
+        }
+        fun checkNull(num:Int ,str:String):String{
+            if(num==0){
+                return if(str.isEmpty()) "주소 없읍" else str
+            }
+            else if(num==1){
+                return if(str.isEmpty()) "번호 없읍" else str
+            }
+            else
+                return ""
         }
     }
 }
