@@ -12,6 +12,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.fragment_find_disease.*
 import kotlinx.android.synthetic.main.fragment_youtube.*
+import org.json.JSONObject
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
@@ -49,14 +50,17 @@ class YoutubeFragment : Fragment() {
         var activityreference = WeakReference(context)
         override fun doInBackground(vararg p0: URL?) {
             val activity = activityreference.get()
-            val doc: Document = Jsoup.connect("https://www.youtube.com/results?search_query=%EA%B0%9C").get()
-            val titleLink: Elements = doc.select("#video-title")
-            for(title in titleLink){
-                var abs = title.absUrl("href")
-                var embed = "https://www.youtube.com/embed/"+abs.substring(abs.lastIndexOf("watch?v=")+1)
+            val apiKey = "AIzaSyCeL16_awOQ9LUcgYwAYNEd3ZW7gaxBwcg"
+            val apiUrl = "https://www.googleapis.com/youtube/v3/search?part=snippet&q=dog&maxResults=10&key="+apiKey
+            val doc: Document = Jsoup.connect(apiUrl).ignoreContentType(true).get()
+            val json = JSONObject(doc.text())
+            val array = json.getJSONArray("items")
+
+            for(i in 0 until array.length()){
+                val videoId = array.getJSONObject(i).getJSONObject("id").getString("videoId")
+                var embed = "https://www.youtube.com/embed/"+videoId
                 activity?.dataSetList?.add(DataSetList(embed))
             }
-            activity?.dataSetList?.add(DataSetList("https://www.youtube.com/watch?v=d4LYoO3zshE"))
 
             if (activity != null) {
                 activity?.youtubeAdapter = YoutubeAdapter(activity.dataSetList)
