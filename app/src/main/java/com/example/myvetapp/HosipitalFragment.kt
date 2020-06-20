@@ -2,11 +2,9 @@ package com.example.myvetapp
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.graphics.Color
 import android.os.AsyncTask
 import android.os.Bundle
 import android.os.Looper
-import android.os.StrictMode
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -20,12 +18,9 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.gms.maps.model.PolygonOptions
 import org.w3c.dom.Element
 import org.w3c.dom.Node
-import org.xmlpull.v1.XmlPullParserFactory
 import java.lang.ref.WeakReference
-import java.net.URL
 import javax.xml.parsers.DocumentBuilderFactory
 
 class HosipitalFragment : Fragment() {
@@ -33,8 +28,9 @@ class HosipitalFragment : Fragment() {
     var fusedLocationClient: FusedLocationProviderClient? = null //위치 정보 받아올 객체
     var locationCallback: LocationCallback? = null // 위치 업데이트를 위한 객체
     var locationRequest: LocationRequest? = null
-    var loc = LatLng(37.123213, 111.970631)
+    var loc = LatLng(37.6706, 126.7810)
     val arrLoc = ArrayList<LatLng>()
+    var markTitle = ArrayList<String>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -47,7 +43,6 @@ class HosipitalFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         initLocation()
-//        initMap()
     }
 
     // 앱을 실행 시켰을 때 권한 정보 체크 및 요청 하는 함수
@@ -57,7 +52,7 @@ class HosipitalFragment : Fragment() {
             ActivityCompat.checkSelfPermission(requireActivity(),
                 Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
             getuserlocation()
-            startLocationUpdates()
+//            startLocationUpdates()
             initMap()
         }
         else{
@@ -104,7 +99,7 @@ class HosipitalFragment : Fragment() {
 
     override fun onPause() {
         super.onPause()
-        stopLocationUpdates()
+//        stopLocationUpdates()
     }
 
     fun getuserlocation() {
@@ -128,7 +123,7 @@ class HosipitalFragment : Fragment() {
         if(requestCode == 100){
             if(grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED){
                 getuserlocation()
-                startLocationUpdates()
+//                startLocationUpdates()
                 initMap()
             }
             else {
@@ -152,18 +147,26 @@ class HosipitalFragment : Fragment() {
     }
 
     private fun initMark(){
+        val options = MarkerOptions()
+        googleMap.clear()
         val task = MyAsyncTask(this)
-        task.execute()
-
+        if(task.execute().get()){
+            for(i in 0..arrLoc.size-1){
+                options.position(arrLoc[i])
+                options.title(markTitle[i])
+                options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
+                val mk1 = googleMap.addMarker(options)
+                mk1.showInfoWindow()
+            }
+        }
     }
 
-    class MyAsyncTask(context: HosipitalFragment): AsyncTask<Unit, Unit, Unit>(){
+    class MyAsyncTask(context: HosipitalFragment): AsyncTask<Unit, Unit, Boolean>(){
         var activityreference = WeakReference(context)
-        override fun doInBackground(vararg p0: Unit?) {
+
+        override fun doInBackground(vararg p0: Unit?): Boolean {
             val activity = activityreference.get()
             val apiKey = "ed857aecd5ad48a3a8688ac44d222775"
-            activity?.googleMap?.clear()
-            val options = MarkerOptions()
             val apiUrl = "https://openapi.gg.go.kr/Animalhosptl?KEY="+apiKey
             val xml = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(apiUrl)
             val list = xml.getElementsByTagName("row")
@@ -177,16 +180,14 @@ class HosipitalFragment : Fragment() {
                     for(j in 0..elem.attributes.length-1){
                         map.putIfAbsent(elem.attributes.item(j).nodeName, elem.attributes.item(j).nodeValue)
                     }
-                    activity?.loc = LatLng(elem.getElementsByTagName("REFINE_WGS84_LAT").item(0).textContent.toDouble(), elem.getElementsByTagName("REFINE_WGS84_LOGT").item(0).textContent.toDouble())
-                    if (activity != null) {
-                        options.position(activity.loc)
+                    if(elem.getElementsByTagName("BSN_STATE_NM").item(0).textContent=="정상"){
+                        activity?.loc = LatLng(elem.getElementsByTagName("REFINE_WGS84_LAT").item(0).textContent.toDouble(), elem.getElementsByTagName("REFINE_WGS84_LOGT").item(0).textContent.toDouble())
+                        activity?.arrLoc?.add(activity?.loc)
+                        activity?.markTitle?.add(elem.getElementsByTagName("BIZPLC_NM").item(0).textContent)
                     }
-                    options.title(elem.getElementsByTagName("BIZPLC_NM").item(0).textContent)
-                    options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
-                    val mk1 = activity?.googleMap?.addMarker(options)
-                    mk1?.showInfoWindow()
                 }
             }
+            return true
         }
     }
 }
