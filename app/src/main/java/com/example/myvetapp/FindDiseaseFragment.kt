@@ -2,12 +2,15 @@ package com.example.myvetapp
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.firebase.ui.database.FirebaseRecyclerOptions
@@ -21,6 +24,7 @@ class FindDiseaseFragment : Fragment() {
     lateinit var rdb: DatabaseReference
     var symptomSet = mutableSetOf<String>()
     var symptom = ArrayList<String>()
+    var findQuery = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -63,7 +67,7 @@ class FindDiseaseFragment : Fragment() {
 
         })
 
-        val query = FirebaseDatabase.getInstance().reference.child("Diseases/disease").limitToFirst(1524)
+        val query = rdb.limitToFirst(100)
         val option = FirebaseRecyclerOptions.Builder<Disease>()
             .setQuery(query,Disease::class.java)
             .build()
@@ -72,6 +76,39 @@ class FindDiseaseFragment : Fragment() {
 
         autoadapter = ArrayAdapter(requireActivity(), android.R.layout.simple_dropdown_item_1line, symptom)
         autoCompleteTextView.setAdapter(autoadapter)
+        autoCompleteTextView.addTextChangedListener(object:TextWatcher{
+            override fun afterTextChanged(p0: Editable?) {
+                if(findQuery)
+                    findQueryAdapter()
+                else{
+                    findQuery = true
+                    findQueryAdapter()
+                }
+            }
+
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+            }
+
+        })
+    }
+
+    fun findQueryAdapter(){
+        if(diseaseadapter!=null)
+            diseaseadapter.stopListening()
+        val query = rdb.orderByChild("dSymptom").equalTo(autoCompleteTextView.text.toString())
+        val option = FirebaseRecyclerOptions.Builder<Disease>()
+            .setQuery(query,Disease::class.java)
+            .build()
+        autoCompleteTextView.text = null
+        diseaseadapter = MyDiseaseAdapter(option)
+        recyclerView.adapter = diseaseadapter
+        diseaseadapter
+            .startListening()
     }
 
     override fun onStart() {
