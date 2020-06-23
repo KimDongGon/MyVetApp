@@ -19,7 +19,8 @@ class FindDiseaseFragment : Fragment() {
     lateinit var diseaseadapter: MyDiseaseAdapter
     lateinit var layoutManager: LinearLayoutManager
     lateinit var rdb: DatabaseReference
-    var symptom = ArrayList<String>();
+    var symptomSet = mutableSetOf<String>()
+    var symptom = ArrayList<String>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,6 +39,30 @@ class FindDiseaseFragment : Fragment() {
         layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
         recyclerView.layoutManager = layoutManager
         rdb = FirebaseDatabase.getInstance().reference.child("Diseases/disease")
+        rdb.addListenerForSingleValueEvent(object: ValueEventListener{
+            override fun onCancelled(p0: DatabaseError) {
+
+            }
+
+            override fun onDataChange(snapshot: DataSnapshot) {
+                for(data in snapshot.children){
+                    var symptomValue = data.getValue(Disease::class.java)?.dSymptom
+                    val strArray = symptomValue.toString().split("|")
+                    for(i in 0 until strArray.size){
+                        val strArray2 = strArray[i].split(",")
+                        for(j in 0 until strArray2.size){
+                            symptomSet.add(strArray2[j].replace(" ","").trim())
+                        }
+                    }
+                }
+                for(item in symptomSet){
+                    symptom.add(item)
+                    Log.d("symptom", item)
+                }
+            }
+
+        })
+
         val query = FirebaseDatabase.getInstance().reference.child("Diseases/disease").limitToFirst(1524)
         val option = FirebaseRecyclerOptions.Builder<Disease>()
             .setQuery(query,Disease::class.java)
@@ -45,10 +70,6 @@ class FindDiseaseFragment : Fragment() {
         diseaseadapter = MyDiseaseAdapter(option)
         recyclerView.adapter = diseaseadapter
 
-//        symptom = findSymptom()
-        symptom.add("ala")
-//        symptom.add("abb")
-        Toast.makeText(requireActivity(), symptom[0], Toast.LENGTH_SHORT).show()
         autoadapter = ArrayAdapter(requireActivity(), android.R.layout.simple_dropdown_item_1line, symptom)
         autoCompleteTextView.setAdapter(autoadapter)
     }
