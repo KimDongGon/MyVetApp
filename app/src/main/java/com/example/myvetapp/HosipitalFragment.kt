@@ -36,7 +36,7 @@ class HosipitalFragment : Fragment() {
     var fusedLocationClient: FusedLocationProviderClient? = null //위치 정보 받아올 객체
     var locationCallback: LocationCallback? = null // 위치 업데이트를 위한 객체
     var locationRequest: LocationRequest? = null
-    var loc = LatLng(37.6706, 126.7810)
+    var loc:LatLng? = LatLng(37.6706, 126.7810)
     val arrLoc = ArrayList<LatLng>()
     var markTitle = ArrayList<String>()
     var markTel = ArrayList<String>()
@@ -273,7 +273,7 @@ class HosipitalFragment : Fragment() {
                     }
                     if(elem.getElementsByTagName("BSN_STATE_NM").item(0).textContent=="정상"){
                         activity?.loc = LatLng(elem.getElementsByTagName("REFINE_WGS84_LAT").item(0).textContent.toDouble(), elem.getElementsByTagName("REFINE_WGS84_LOGT").item(0).textContent.toDouble())
-                        activity?.arrLoc?.add(activity?.loc)
+                        activity?.arrLoc?.add(activity?.loc!!)
                         activity?.markTitle?.add(elem.getElementsByTagName("BIZPLC_NM").item(0).textContent)
                         activity?.markAddr?.add(checkNull(0, elem.getElementsByTagName("REFINE_LOTNO_ADDR").item(0).textContent))
                         activity?.markTel?.add(checkNull(1, elem.getElementsByTagName("LOCPLC_FACLT_TELNO").item(0).textContent))

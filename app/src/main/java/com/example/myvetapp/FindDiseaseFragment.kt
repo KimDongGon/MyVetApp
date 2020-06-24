@@ -1,5 +1,6 @@
 package com.example.myvetapp
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
@@ -9,13 +10,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.firebase.ui.database.FirebaseRecyclerOptions
+import com.google.android.material.chip.Chip
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.fragment_find_disease.*
+import org.w3c.dom.Text
 
 class FindDiseaseFragment : Fragment() {
     lateinit var autoadapter: ArrayAdapter<String>
@@ -24,14 +30,17 @@ class FindDiseaseFragment : Fragment() {
     lateinit var rdb: DatabaseReference
     var symptomSet = mutableSetOf<String>()
     var symptom = ArrayList<String>()
-    var findQuery = false
+    var findList = ArrayList<String>()
+
+    var auth: FirebaseAuth? = null
+    var fragmentView:View?=null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_find_disease, container, false)
+        fragmentView = inflater.inflate(R.layout.fragment_find_disease, container, false)
+        return fragmentView
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -61,13 +70,12 @@ class FindDiseaseFragment : Fragment() {
                 }
                 for(item in symptomSet){
                     symptom.add(item)
-                    Log.d("symptom", item)
                 }
             }
 
         })
 
-        val query = rdb.limitToFirst(100)
+        val query = rdb.limitToFirst(1527)
         val option = FirebaseRecyclerOptions.Builder<Disease>()
             .setQuery(query,Disease::class.java)
             .build()
@@ -76,39 +84,51 @@ class FindDiseaseFragment : Fragment() {
 
         autoadapter = ArrayAdapter(requireActivity(), android.R.layout.simple_dropdown_item_1line, symptom)
         autoCompleteTextView.setAdapter(autoadapter)
-        autoCompleteTextView.addTextChangedListener(object:TextWatcher{
-            override fun afterTextChanged(p0: Editable?) {
-                if(findQuery)
-                    findQueryAdapter()
-                else{
-                    findQuery = true
-                    findQueryAdapter()
-                }
+        autoCompleteTextView.setOnItemClickListener { adapterView, view, position, l ->
+            var newChip = Chip(requireActivity())
+            newChip.setCloseIconVisible(true)
+            newChip.setText((view as TextView).text.toString())
+            findList.add(view.text.toString())
+            chipGroup.addView(newChip)
+            findQueryAdapter()
+            autoCompleteTextView.text = null
+
+            newChip.setOnCloseIconClickListener {
+                chipGroup.removeView(it)
+                findList.remove((it as TextView).text.toString())
+                findQueryAdapter()
             }
+        }
 
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-
-            }
-
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-
-            }
-
-        })
+        logoutbtn.setColorFilter(ContextCompat.getColor(requireActivity(), R.color.colorHoloBlueDark))
+        auth = FirebaseAuth.getInstance()
+        logoutbtn.setOnClickListener{
+            activity?.finish()
+            startActivity(Intent(activity, LoginActivity::class.java))
+            auth?.signOut()
+        }
     }
 
     fun findQueryAdapter(){
         if(diseaseadapter!=null)
             diseaseadapter.stopListening()
-        val query = rdb.orderByChild("dSymptom").equalTo(autoCompleteTextView.text.toString())
-        val option = FirebaseRecyclerOptions.Builder<Disease>()
-            .setQuery(query,Disease::class.java)
-            .build()
-        autoCompleteTextView.text = null
-        diseaseadapter = MyDiseaseAdapter(option)
-        recyclerView.adapter = diseaseadapter
-        diseaseadapter
-            .startListening()
+        if(findList.isEmpty()) {
+            val query = rdb.limitToFirst(1527)
+            val option = FirebaseRecyclerOptions.Builder<Disease>()
+                .setQuery(query,Disease::class.java)
+                .build()
+            diseaseadapter = MyDiseaseAdapter(option)
+            recyclerView.adapter = diseaseadapter
+        }
+        else{
+            val query = rdb.orderByChild("dSymptom")
+            val option = FirebaseRecyclerOptions.Builder<Disease>()
+                .setQuery(query,Disease::class.java)
+                .build()
+            diseaseadapter = MyDiseaseAdapter(option, findList, true)
+            recyclerView.adapter = diseaseadapter
+        }
+        diseaseadapter.startListening()
     }
 
     override fun onStart() {

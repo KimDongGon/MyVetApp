@@ -17,10 +17,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.*
-import com.twitter.sdk.android.core.Result
-import com.twitter.sdk.android.core.Twitter
-import com.twitter.sdk.android.core.TwitterException
-import com.twitter.sdk.android.core.TwitterSession
+import com.twitter.sdk.android.core.*
 import com.twitter.sdk.android.core.identity.TwitterAuthClient
 import kotlinx.android.synthetic.main.activity_login.*
 import java.util.*
@@ -32,9 +29,18 @@ class LoginActivity : AppCompatActivity() {
     var callbackManager: CallbackManager?= null
     val GOOGLE_LOGIN_CODE = 9001
     var twitterAuthClient: TwitterAuthClient? = null
+//    var twitterauthconfig:TwitterAuthConfig? = null
+//    var twitterConfig: TwitterConfig? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+//        twitterauthconfig = TwitterAuthConfig(getString(R.string.com_twitter_sdk_android_CONSUMER_KEY),
+//        getString(R.string.com_twitter_sdk_android_CONSUMER_SECRET))
+//        twitterConfig = TwitterConfig.Builder(this)
+//            .twitterAuthConfig(twitterauthconfig)
+//            .build()
+//        Twitter.initialize(twitterConfig)
+        Twitter.initialize(this)
         setContentView(R.layout.activity_login)
         init()
     }
@@ -47,6 +53,8 @@ class LoginActivity : AppCompatActivity() {
             .build()
         googleSignInClient = GoogleSignIn.getClient(this, gso)
         callbackManager = CallbackManager.Factory.create()
+
+        twitterAuthClient = TwitterAuthClient()
 
         email_login_button.setOnClickListener {
             if(email_editText.text.toString().isNullOrEmpty() || password_editText.text.toString().isNullOrEmpty()){
@@ -83,13 +91,12 @@ class LoginActivity : AppCompatActivity() {
         }
         twitter_login_button.setOnClickListener {
             progress_bar.visibility = View.VISIBLE
-            twitterAuthClient?.authorize(this, object :
-                com.twitter.sdk.android.core.Callback<TwitterSession>() {
+            twitterAuthClient?.authorize(this, object : com.twitter.sdk.android.core.Callback<TwitterSession>() {
                 override fun success(result: Result<TwitterSession>?) {
-                    val credentiral = TwitterAuthProvider.getCredential(
+                    val credential = TwitterAuthProvider.getCredential(
                         result?.data?.authToken?.token!!,
                         result?.data?.authToken?.secret!!)
-                    auth?.signInWithCredential(credentiral)?.addOnCompleteListener { task ->
+                    auth?.signInWithCredential(credential)?.addOnCompleteListener { task ->
                         progress_bar.visibility = View.GONE
                         if (task.isSuccessful){
                             moveMainPage(auth?.currentUser)
@@ -98,7 +105,7 @@ class LoginActivity : AppCompatActivity() {
                 }
 
                 override fun failure(exception: TwitterException?) {
-
+                    progress_bar.visibility = View.GONE
                 }
 
             })

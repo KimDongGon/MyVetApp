@@ -25,6 +25,7 @@
         android:id="@+id/progress_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:indeterminateTint="@color/colorHoloBlueDark"
         android:layout_centerInParent="true"
         android:visibility="gone"/>
 
@@ -42,12 +43,15 @@
             android:layout_marginEnd="20dp"
             android:layout_marginStart="20dp">
 
-            <EditText
+            <androidx.appcompat.widget.AppCompatEditText
                 android:id="@+id/email_editText"
+                style="@style/EditTextStyle"
+                android:textColorHint="@color/colorSky"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:hint="@string/email"
-                android:inputType="textEmailAddress"/>
+                android:inputType="textEmailAddress"
+                android:theme="@style/EditTextStyle" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -56,15 +60,18 @@
             android:layout_marginEnd="20dp"
             android:layout_marginStart="20dp">
 
-            <EditText
+            <androidx.appcompat.widget.AppCompatEditText
                 android:id="@+id/password_editText"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                style="@style/EditTextStyle"
+                android:textColorHint="@color/colorSky"
+                android:theme="@style/EditTextStyle"
                 android:hint="password"
                 android:inputType="textPassword"/>
         </com.google.android.material.textfield.TextInputLayout>
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/email_login_button"
             android:layout_width="match_parent"
             android:layout_height="40dp"
@@ -75,7 +82,7 @@
             android:text="@string/signin_email"
             android:theme="@style/ButtonStyle"/>
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/google_sign_in_button"
             android:layout_width="match_parent"
             android:layout_height="40dp"
@@ -86,7 +93,7 @@
             android:text="@string/signin_google"
             android:textColor="@color/colorWhite"/>
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/facebook_login_button"
             android:layout_width="match_parent"
             android:layout_height="40dp"
@@ -98,7 +105,7 @@
             android:text="@string/signin_facebook"
             android:textColor="@color/colorWhite"/>
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/twitter_login_button"
             android:layout_width="match_parent"
             android:layout_height="40dp"
