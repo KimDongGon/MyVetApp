@@ -3,8 +3,8 @@
     <string name="facebook_app_id">1128159327543650</string>
     <string name="fb_login_protocol_scheme">fb1128159327543650</string>
 
-    <string name="com.twitter.sdk.android.CONSUMER_KEY">VDgWHyCe9KZTMDG3Ds4AwE5Hq</string>
-    <string name="com.twitter.sdk.android.CONSUMER_SECRET">7JyGuzLF76bHTNT4vd4YH8XodsTDXS7o3J5VXaldOYN3a1rtqO</string>
+    <string name="com.twitter.sdk.android.CONSUMER_KEY">6qPCgCrKWrnpLGdxbE9S0O6xS</string>
+    <string name="com.twitter.sdk.android.CONSUMER_SECRET">Ls8n5XfVPxfKmr0nYXoaeSvVG7Y3pt0Cot3uXZyBCwg9HwS9ek</string>
 
     <!-- Sign In -->
     <string name="email">Email</string>

@@ -3,6 +3,7 @@ package com.example.myvetapp
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import com.facebook.AccessToken
@@ -19,6 +20,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.*
 import com.twitter.sdk.android.core.*
 import com.twitter.sdk.android.core.identity.TwitterAuthClient
+import com.twitter.sdk.android.core.identity.TwitterLoginButton
 import kotlinx.android.synthetic.main.activity_login.*
 import java.util.*
 import javax.security.auth.callback.Callback
@@ -28,7 +30,7 @@ class LoginActivity : AppCompatActivity() {
     var googleSignInClient: GoogleSignInClient? = null
     var callbackManager: CallbackManager?= null
     val GOOGLE_LOGIN_CODE = 9001
-    var twitterAuthClient: TwitterAuthClient? = null
+//    var twitterAuthClient: TwitterAuthClient? = null
 //    var twitterauthconfig:TwitterAuthConfig? = null
 //    var twitterConfig: TwitterConfig? = null
 
@@ -40,7 +42,7 @@ class LoginActivity : AppCompatActivity() {
 //            .twitterAuthConfig(twitterauthconfig)
 //            .build()
 //        Twitter.initialize(twitterConfig)
-        Twitter.initialize(this)
+//        Twitter.initialize(this)
         setContentView(R.layout.activity_login)
         init()
     }
@@ -54,7 +56,7 @@ class LoginActivity : AppCompatActivity() {
         googleSignInClient = GoogleSignIn.getClient(this, gso)
         callbackManager = CallbackManager.Factory.create()
 
-        twitterAuthClient = TwitterAuthClient()
+//        twitterAuthClient = TwitterAuthClient()
 
         email_login_button.setOnClickListener {
             if(email_editText.text.toString().isNullOrEmpty() || password_editText.text.toString().isNullOrEmpty()){
@@ -89,27 +91,28 @@ class LoginActivity : AppCompatActivity() {
 
             })
         }
-        twitter_login_button.setOnClickListener {
-            progress_bar.visibility = View.VISIBLE
-            twitterAuthClient?.authorize(this, object : com.twitter.sdk.android.core.Callback<TwitterSession>() {
-                override fun success(result: Result<TwitterSession>?) {
-                    val credential = TwitterAuthProvider.getCredential(
-                        result?.data?.authToken?.token!!,
-                        result?.data?.authToken?.secret!!)
-                    auth?.signInWithCredential(credential)?.addOnCompleteListener { task ->
-                        progress_bar.visibility = View.GONE
-                        if (task.isSuccessful){
-                            moveMainPage(auth?.currentUser)
-                        }
-                    }
-                }
-
-                override fun failure(exception: TwitterException?) {
-                    progress_bar.visibility = View.GONE
-                }
-
-            })
-        }
+//        twitter_login_button.setOnClickListener {
+//            progress_bar.visibility = View.VISIBLE
+//            twitterAuthClient?.authorize(this, object : com.twitter.sdk.android.core.Callback<TwitterSession>() {
+//                override fun success(result: Result<TwitterSession>?) {
+//                    Log.d("test", "success")
+//                    val credential = TwitterAuthProvider.getCredential(
+//                        result?.data?.authToken?.token!!,
+//                        result?.data?.authToken?.secret!!)
+//                    auth?.signInWithCredential(credential)?.addOnCompleteListener { task ->
+//                        progress_bar.visibility = View.GONE
+//                        if (task.isSuccessful){
+//                            moveMainPage(auth?.currentUser)
+//                        }
+//                    }
+//                }
+//
+//                override fun failure(exception: TwitterException?) {
+//                    Log.d("test", "fail")
+//                    progress_bar.visibility = View.GONE
+//                }
+//            })
+//        }
     }
 
     fun moveMainPage(user: FirebaseUser?){
@@ -167,7 +170,7 @@ class LoginActivity : AppCompatActivity() {
 
         callbackManager?.onActivityResult(requestCode, resultCode, data)
 
-        twitterAuthClient?.onActivityResult(requestCode, resultCode, data)
+//        twitterAuthClient?.onActivityResult(requestCode, resultCode, data)
 
         if(requestCode == GOOGLE_LOGIN_CODE){
             var result = Auth.GoogleSignInApi.getSignInResultFromIntent(data)
