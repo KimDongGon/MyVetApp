@@ -3,7 +3,6 @@ package com.example.myvetapp
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import com.facebook.AccessToken
@@ -18,12 +17,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.*
-import com.twitter.sdk.android.core.*
-import com.twitter.sdk.android.core.identity.TwitterAuthClient
-import com.twitter.sdk.android.core.identity.TwitterLoginButton
 import kotlinx.android.synthetic.main.activity_login.*
 import java.util.*
-import javax.security.auth.callback.Callback
 
 class LoginActivity : AppCompatActivity() {
     var auth: FirebaseAuth? = null

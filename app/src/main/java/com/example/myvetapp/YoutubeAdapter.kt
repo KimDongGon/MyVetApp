@@ -7,11 +7,7 @@ import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Button
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.firebase.ui.database.FirebaseRecyclerAdapter
-import com.firebase.ui.database.FirebaseRecyclerOptions
-import org.w3c.dom.Text
 
 class YoutubeAdapter(var items:ArrayList<DataSetList>) :
     RecyclerView.Adapter<YoutubeAdapter.ViewHolder>() {

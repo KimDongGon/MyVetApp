@@ -1,9 +1,6 @@
 package com.example.myvetapp
 
-import android.content.res.Resources
-import android.graphics.Color
 import android.graphics.Typeface
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,7 +9,6 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
-import org.w3c.dom.Text
 
 class MyDiseaseAdapter(options: FirebaseRecyclerOptions<Disease>, symptom:ArrayList<String> = arrayListOf(), check:Boolean = false) :
     FirebaseRecyclerAdapter<Disease, MyDiseaseAdapter.ViewHolder>(options) {
