@@ -9,7 +9,6 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
         
         <WebView
             android:layout_width="match_parent"
@@ -18,13 +17,14 @@
 
         </WebView>
 
-        <Button
-            android:layout_width="match_parent"
+        <androidx.appcompat.widget.AppCompatButton
+            android:layout_width="40dp"
             android:layout_height="40dp"
+            android:layout_alignParentEnd="true"
+            android:text="[    ]"
             android:layout_alignParentBottom="true"
-            android:text="View FullScreen"
-            android:background="@android:color/transparent"
             android:textColor="@color/colorWhite"
+            android:background="@android:color/transparent"
             android:id="@+id/fullscreenbtn"/>
 
     </RelativeLayout>

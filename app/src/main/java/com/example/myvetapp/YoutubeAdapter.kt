@@ -1,5 +1,6 @@
 package com.example.myvetapp
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -28,9 +29,12 @@ class YoutubeAdapter(var items:ArrayList<DataSetList>) :
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         var current = items.get(position)
+
         holder.webView.loadUrl(current.link)
         holder.fullscreenbtn.setOnClickListener {
-
+            var intent = Intent(holder.itemView.context,VideoFullScreen::class.java)
+            intent.putExtra("link", current.link)
+            holder.itemView.context.startActivity(intent)
         }
     }
 

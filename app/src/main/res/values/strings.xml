@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">201611188 김동곤</string>
+    <string name="app_name">Vet</string>
     <string name="facebook_app_id">1128159327543650</string>
     <string name="fb_login_protocol_scheme">fb1128159327543650</string>
 
@@ -19,6 +19,7 @@
     <string name="signout_success">Signout success</string>
     <string name="signout_fail">Signout fail</string>
     <string name="signout_fail_null">Please enter your email and password</string>
+    <string name="email_complete">Confirm sign up via your email verification</string>
 
     <!-- Bottom Navigation View -->
     <string name="home">home</string>

@@ -3,6 +3,7 @@ package com.example.myvetapp
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import com.facebook.AccessToken
@@ -16,6 +17,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.*
 import kotlinx.android.synthetic.main.activity_login.*
 import java.util.*
@@ -119,27 +121,50 @@ class LoginActivity : AppCompatActivity() {
     }
 
     fun createAndLoginEmail(){
+        auth?.currentUser?.reload()
         auth?.createUserWithEmailAndPassword(email_editText.text.toString(), password_editText.text.toString())
             ?.addOnCompleteListener { task ->
                 progress_bar.visibility = View.GONE
                 if(task.isSuccessful){
-                    Toast.makeText(this, getString(R.string.signup_complete), Toast.LENGTH_SHORT).show()
-                    moveMainPage(auth?.currentUser)
+                    verifyEmail()
                 }
                 else if(task.exception?.message.isNullOrEmpty()){
                     Toast.makeText(this, task.exception!!.message, Toast.LENGTH_SHORT).show()
                 }
                 else{
-                    signinEmail()
+                    if(auth?.currentUser?.isEmailVerified == null || auth?.currentUser?.isEmailVerified != false)
+                        signinEmail()
+                    else
+                        Toast.makeText(this, getString(R.string.email_complete), Toast.LENGTH_SHORT).show()
                 }
             }
     }
+
+    fun verifyEmail(){
+        auth?.currentUser?.sendEmailVerification()
+            ?.addOnCompleteListener {
+                progress_bar.visibility = View.GONE
+                if(it.isSuccessful){
+                    Toast.makeText(this, getString(R.string.email_complete), Toast.LENGTH_SHORT).show()
+                }else{
+                    Toast.makeText(this, it.exception!!.message, Toast.LENGTH_SHORT).show()
+                }
+            }
+    }
+
+//    fun verifyEmailCheck(){
+//        auth?.currentUser?.linkWithCredential()!!
+//            .addOnCompleteListener {
+//                if (it.isSuccessful){
+//
+//                }
+//            }
+//    }
 
     fun signinEmail(){
         auth?.signInWithEmailAndPassword(email_editText.text.toString(), password_editText.text.toString())
             ?.addOnCompleteListener { task ->
                 progress_bar.visibility = View.GONE
-
                 if(task.isSuccessful){
                     moveMainPage(auth?.currentUser)
                 }
