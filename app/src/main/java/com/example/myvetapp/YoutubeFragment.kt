@@ -17,8 +17,8 @@ import java.lang.ref.WeakReference
 import java.net.URL
 
 class YoutubeFragment : Fragment() {
-    lateinit var layoutManager: LinearLayoutManager
 //    lateinit var layoutManager: GridLayoutManager
+    lateinit var layoutManager: LinearLayoutManager
     lateinit var youtubeAdapter: YoutubeAdapter
     var dataSetList = ArrayList<DataSetList>()
 
@@ -36,8 +36,8 @@ class YoutubeFragment : Fragment() {
     }
 
     private fun init() {
-        layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
 //        layoutManager = GridLayoutManager(requireActivity(),2,GridLayoutManager.VERTICAL,false)
+        layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
         youtubeRecyclerView.layoutManager = layoutManager
         youtubeRecyclerView.setHasFixedSize(true)
 
@@ -50,7 +50,7 @@ class YoutubeFragment : Fragment() {
         override fun doInBackground(vararg p0: URL?) {
             val activity = activityreference.get()
             val apiKey = "AIzaSyCeL16_awOQ9LUcgYwAYNEd3ZW7gaxBwcg"
-            val apiUrl = "https://www.googleapis.com/youtube/v3/search?part=snippet&q=반려동물 응급처치&maxResults=10&key="+apiKey
+            val apiUrl = "https://www.googleapis.com/youtube/v3/search?part=snippet&q=반려동물+응급처치&key="+apiKey
             Log.d("url", apiUrl)
             val doc: Document = Jsoup.connect(apiUrl).ignoreContentType(true).get()
             val json = JSONObject(doc.text())
