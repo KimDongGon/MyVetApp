@@ -20,6 +20,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -70,7 +71,7 @@ class HosipitalFragment : Fragment() {
         else{
             // 권한이 없을 경우 requestPermission 함수를 사용하여 권한 요청
             // 결과는 onRequestPermissionResult로 이동동
-           ActivityCompat.requestPermissions(requireActivity(),
+           requestPermissions(
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION), MAP_REQUEST)
         }
     }
@@ -134,7 +135,8 @@ class HosipitalFragment : Fragment() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when(requestCode){
             MAP_REQUEST->{
-                if(grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED){
+                if(ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                    && ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
                     getuserlocation()
 //                startLocationUpdates()
                     initMap()
@@ -145,7 +147,7 @@ class HosipitalFragment : Fragment() {
                 }
             }
             CALL_REQUEST->{
-                if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                if(ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.ANSWER_PHONE_CALLS) == PackageManager.PERMISSION_GRANTED){
                     Toast.makeText(requireActivity(),"권한이 승인되었습니다.", Toast.LENGTH_SHORT).show()
                     callAction()
                 }

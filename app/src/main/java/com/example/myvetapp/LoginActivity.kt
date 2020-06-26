@@ -132,7 +132,8 @@ class LoginActivity : AppCompatActivity() {
                     Toast.makeText(this, task.exception!!.message, Toast.LENGTH_SHORT).show()
                 }
                 else{
-                    if(auth?.currentUser?.isEmailVerified == null || auth?.currentUser?.isEmailVerified != false)
+                    Log.d("veir", auth?.currentUser?.isEmailVerified.toString())
+                    if(auth?.currentUser?.isEmailVerified != false)
                         signinEmail()
                     else
                         Toast.makeText(this, getString(R.string.email_complete), Toast.LENGTH_SHORT).show()
@@ -150,6 +151,10 @@ class LoginActivity : AppCompatActivity() {
                     Toast.makeText(this, it.exception!!.message, Toast.LENGTH_SHORT).show()
                 }
             }
+    }
+
+    fun test(){
+
     }
 
 //    fun verifyEmailCheck(){
@@ -219,6 +224,8 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        moveMainPage(auth?.currentUser)
+        if(auth?.currentUser?.isEmailVerified != false) {
+            moveMainPage(auth?.currentUser)
+        }
     }
 }
